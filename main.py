@@ -12,3 +12,9 @@ p = figure(
     x_axis_label='X Axis',
     y_axis_label='Y Axis'
 )
+
+# Render glyph
+p.line(x, y, legend_label='Test', line_width=2)
+
+# show
+show(p)
