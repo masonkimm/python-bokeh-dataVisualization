@@ -1,4 +1,8 @@
-from bokeh.plotting import figure, output_file, show, ColumnDataSource
+from bokeh.plotting import figure, output_file, show, save, ColumnDataSource
+from bokeh.models.tools import HoverTool
+from bokeh.transform import factor_cmap
+from bokeh.palettes import Blues8
+from bokeh.embed import components
 import pandas
 
 # x = [1, 2, 3, 4, 5]
@@ -26,6 +30,7 @@ p = figure(
     x_axis_label='Horsepower',
     y_axis_label='Cars',
     tools= 'pan, box_select, zoom_in, zoom_out,save, reset',
+    
 )
 
 # Render glyph
@@ -34,12 +39,41 @@ p.hbar(
     right='Horsepower',
     left=0,
     height=0.4,
-    color='orange',
-    fill_alpha=0.5,
-    source=source
+    fill_color=factor_cmap(
+        'Car',
+        palette=Blues8,
+        factors = car_list
+    ),
+    fill_alpha=0.9,
+    source=source,
+    legend_label='Car'
 )
 
-# show
-show(p)
+# Add legend
+p.legend.orientation = 'vertical'
+p.legend.location = 'top_right'
+p.legend.label_text_font_size = '10px'
 
+# Add tooltips
+hover = HoverTool()
+hover.tooltips = '''
+<div>
+    <h3> @Car <h3/>
+    <div> <strong> Price:  </strong>@Price </div>
+    <div> <strong> HP:  </strong>@Horsepower </div>
+    <div> <img src="@Image" alt="" width="200"/></div>
+</div>
+'''
+
+p.add_tools(hover)
+
+# show
+# show(p)
+
+# save
 save(p)
+
+# Print out div and script
+script, div = components(p)
+print(div)
+print(script)
